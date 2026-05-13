@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>DentalFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--navy:#050d1f;--accent:#1a65e0;--cyan:#34b4f0;--red:#e02020;--green:#22c55e;--white:#ffffff;--muted:#5a7aa8;--card:rgba(255,255,255,0.05);--border:rgba(255,255,255,0.09);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#050d1f!important;color:#fff;font-family:'DM Sans',sans-serif;min-height:100vh;}
+.wrap{max-width:800px;margin:0 auto;padding:0 20px;}
+
+/* NAV */
+.nav{background:rgba(5,13,31,0.97);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;display:flex;align-items:center;gap:4px;height:52px;}
+.logo{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;margin-right:16px;}
+.logo span{color:var(--red);}
+.tab{background:none;border:none;cursor:pointer;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;transition:all 0.2s;text-transform:uppercase;letter-spacing:0.5px;}
+.tab.active{background:var(--accent);color:#fff;}
+.tab:hover{background:rgba(255,255,255,0.05);color:#fff;}
+
+/* SECTIONS */
+.section{display:none;padding:32px 0;}
+.section.active{display:block;}
+
+/* HOME */
+.hero{text-align:center;padding:48px 20px;}
+.hero-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:16px;padding:4px 12px;border:1px solid rgba(52,180,240,0.3);border-radius:999px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(36px,6vw,56px);font-weight:800;line-height:1.05;margin-bottom:12px;}
+.hero h1 .red{color:var(--red);}
+.hero p{font-size:16px;color:var(--muted);max-width:480px;margin:0 auto 28px;line-height:1.6;}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#5a5af5);border:none;border-radius:10px;color:#fff;padding:12px 24px;font-size:14px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;}
+.btn-secondary{background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:10px;color:#fff;padding:12px 24px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:32px 0;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;}
+.stat-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--red);line-height:1;}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4;}
+
+/* AI */
+.ai-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px;}
+.ai-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:6px;}
+.ai-sub{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+.ai-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:8px;display:block;}
+.ai-textarea{width:100%;background:#020810;border:1px solid rgba(26,101,224,0.2);border-radius:10px;color:#c8daf5;padding:14px;font-size:15px;font-family:'DM Sans',sans-serif;resize:none;min-height:100px;}
+.ai-textarea:focus{outline:none;border-color:var(--accent);}
+.ai-btn{width:100%;background:linear-gradient(90deg,var(--accent),#5a5af5);border:none;border-radius:10px;color:#fff;padding:14px;font-size:16px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;margin-top:12px;}
+.ai-btn:hover{opacity:0.9;}
+.ai-loading{display:none;align-items:center;gap:8px;color:var(--muted);font-size:13px;padding:12px 0;}
+.ai-loading.show{display:flex;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:bounce 1.2s infinite;display:inline-block;}
+.dot:nth-child(2){animation-delay:0.2s;}.dot:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{0%,80%,100%{transform:scale(0.8);opacity:0.5}40%{transform:scale(1.2);opacity:1}}
+.ai-result{display:none;background:#020810;border:1px solid rgba(26,101,224,0.2);border-radius:12px;padding:18px;margin-top:12px;}
+.ai-result.show{display:block;}
+.ai-result-label{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;}
+.ai-result-text{font-size:15px;color:#8ab0d8;line-height:1.7;font-style:italic;margin-bottom:14px;}
+.ai-copy{width:100%;background:#0a1428;border:1px solid var(--border);border-radius:10px;color:#fff;padding:12px;font-size:14px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.ai-copy:hover{background:var(--accent);}
+.ai-copy.copied{background:var(--green);border-color:var(--green);}
+
+/* DASHBOARD */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;}
+.kpi-num{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1;margin-bottom:4px;}
+.kpi-txt{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;}
+.today-box{border-radius:14px;padding:20px;border:1px solid var(--border);background:var(--card);display:none;margin-bottom:16px;}
+.today-box.show{display:block;}
+.today-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.today-amt{font-family:'Syne',sans-serif;font-size:48px;font-weight:800;line-height:1;margin-bottom:4px;}
+.today-amt.lost{color:var(--red);}
+.today-amt.good{color:var(--green);font-size:28px;}
+.today-msg{font-size:13px;color:var(--muted);}
+.rule-banner{background:rgba(26,101,224,0.06);border:1px solid rgba(26,101,224,0.14);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:16px;}
+.upd-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.upd-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:14px;}
+.inp-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;}
+.ig{display:flex;flex-direction:column;gap:5px;flex:1;min-width:120px;}
+.il{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
+.bi{background:#0a0f1e;border:2px solid #1e293b;border-radius:10px;color:#fff;padding:12px;font-size:20px;font-family:'Syne',sans-serif;font-weight:700;width:100%;text-align:center;}
+.bi:focus{outline:none;border-color:var(--accent);}
+.upd-btn{background:linear-gradient(90deg,var(--accent),#5a5af5);border:none;border-radius:10px;color:#fff;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;}
+.upd-btn:hover{opacity:0.9;}
+
+/* TEMPLATES */
+.tmpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+.tc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;}
+.ttag{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;display:block;}
+.ti{color:var(--cyan);}.tf1{color:#a78bfa;}.tf2{color:#e8971a;}.tb{color:var(--green);}.tcl{color:var(--muted);}
+.tmsg{font-size:14px;color:#8ab0d8;line-height:1.7;font-style:italic;margin-bottom:12px;}
+.tcopy{width:100%;background:#0a1428;border:1px solid var(--border);border-radius:9px;color:#fff;padding:10px;font-size:13px;font-weight:700;font-family:'DM Sans',sans-serif;cursor:pointer;}
+.tcopy:hover{background:var(--accent);}
+.tcopy.copied{background:var(--green);border-color:var(--green);}
+
+/* FLOW */
+.flow-steps{display:flex;flex-direction:column;gap:12px;}
+.flow-step{display:flex;gap:16px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.flow-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.flow-step h4{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.flow-step p{font-size:13px;color:var(--muted);line-height:1.6;}
+
+/* CHECKLIST */
+.cl-section{margin-bottom:24px;}
+.cl-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cyan);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.cl-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;}
+.cl-box{width:20px;height:20px;border-radius:5px;border:2px solid var(--accent);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.cl-item.done .cl-box{background:var(--green);border-color:var(--green);}
+.cl-item.done .cl-box::after{content:'✓';color:#fff;font-size:12px;font-weight:700;}
+.cl-item.done .cl-txt{color:var(--muted);text-decoration:line-through;}
+.cl-txt{font-size:14px;color:#c8daf5;}
+.cl-prog{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;}
+.cl-prog-top{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px;}
+.cl-prog-bar{background:#0f172a;border-radius:999px;height:6px;overflow:hidden;}
+.cl-prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:999px;transition:width 0.5s ease;}
+.cl-reset{background:none;border:1px solid var(--border);border-radius:8px;color:var(--muted);padding:8px 16px;font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:8px;}
+
+/* SECTION TITLES */
+.section-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:#fff;margin-bottom:20px;}
+
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--green);color:#fff;padding:10px 24px;border-radius:999px;font-size:13px;font-weight:700;z-index:999;opacity:0;transition:all 0.3s ease;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .stats-row{grid-template-columns:1fr;}
+  .inp-row{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<nav class="nav">
+  <div class="logo">Dental<span>Flow</span></div>
+  <button class="tab active" onclick="showSection('home',this)">Home</button>
+  <button class="tab" onclick="showSection('ai',this)">AI</button>
+  <button class="tab" onclick="showSection('dashboard',this)">Dashboard</button>
+  <button class="tab" onclick="showSection('templates',this)">Templates</button>
+  <button class="tab" onclick="showSection('flow',this)">Flow</button>
+  <button class="tab" onclick="showSection('checklist',this)">Checklist</button>
+</nav>
+
+<div class="wrap">
+
+<!-- HOME -->
+<div class="section active" id="home">
+  <div class="hero">
+    <div class="hero-badge">⬡ DentalFlow</div>
+    <h1>Stop Losing<br/><span class="red">Patients.</span></h1>
+    <p>The protocol clinics use to stop losing patients — from first contact to confirmed appointment.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showSection('ai',document.querySelectorAll('.tab')[1])">Start with AI →</button>
+      <button class="btn-secondary" onclick="showSection('dashboard',document.querySelectorAll('.tab')[2])">View Dashboard</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">55%</div><div class="stat-lbl">of leads lost to bad follow-up</div></div>
+    <div class="stat"><div class="stat-num">47h</div><div class="stat-lbl">avg clinic response time</div></div>
+    <div class="stat"><div class="stat-num">10x</div><div class="stat-lbl">more likely to convert in 5 min</div></div>
+  </div>
+</div>
+
+<!-- AI -->
+<div class="section" id="ai">
+  <div class="section-title">AI Response Generator</div>
+  <div class="ai-card">
+    <div class="ai-title">Generate the perfect response</div>
+    <div class="ai-sub">Paste what the patient wrote and get a professional response instantly. Copy and send via WhatsApp or any channel.</div>
+    <span class="ai-label">Patient's Message</span>
+    <textarea class="ai-textarea" id="patientMsg" placeholder="Paste what the patient wrote here..."></textarea>
+    <div class="ai-loading" id="aiLoading">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span>Generating response...</span>
+    </div>
+    <div class="ai-result" id="aiResult">
+      <div class="ai-result-label">✅ Suggested Response — Copy & Send</div>
+      <div class="ai-result-text" id="aiResultText"></div>
+      <button class="ai-copy" id="aiCopyBtn" onclick="copyAI()">📋 Copy & Send</button>
+    </div>
+    <button class="ai-btn" onclick="generateResponse()">✨ Generate Response</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="section" id="dashboard">
+  <div class="section-title">Revenue Dashboard</div>
+  <div class="today-box" id="todayBox">
+    <div class="today-lbl" id="tLbl"></div>
+    <div class="today-amt" id="tAmt"></div>
+    <div class="today-msg" id="tMsg"></div>
+  </div>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-num" style="color:#6366f1" id="kL">0</div><div class="kpi-txt">Leads</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:#38bdf8" id="kB">0</div><div class="kpi-txt">Booked</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--red)" id="kLo">0</div><div class="kpi-txt">Lost</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--red);font-size:22px" id="kR">$0</div><div class="kpi-txt">Lost Revenue</div></div>
+  </div>
+  <div class="rule-banner">📌 Update daily. No skip days.</div>
+  <div class="upd-card">
+    <div class="upd-title">📋 Enter Today's Numbers</div>
+    <div class="inp-row">
+      <div class="ig"><div class="il">Leads</div><input class="bi" type="number" id="iL" placeholder="0" min="0"/></div>
+      <div class="ig"><div class="il">Booked</div><input class="bi" type="number" id="iB" placeholder="0" min="0"/></div>
+      <div class="ig"><div class="il">Avg Ticket ($)</div><input class="bi" type="number" id="iT" placeholder="1000" min="1"/></div>
+    </div>
+    <button class="upd-btn" onclick="doUpdate()">Update Dashboard →</button>
+  </div>
+</div>
+
+<!-- TEMPLATES -->
+<div class="section" id="templates">
+  <div class="section-title">Follow-Up Templates</div>
+  <div class="tmpl-grid">
+    <div class="tc"><span class="ttag ti">⚡ First Message</span><div class="tmsg" id="t1">Thank you for contacting us. To better assist you, what treatment are you looking for and when would you like to schedule?</div><button class="tcopy" onclick="copyT('t1',this)">📋 Copy</button></div>
+    <div class="tc"><span class="ttag tf1">🔔 24-Hour Follow-Up</span><div class="tmsg" id="t2">Just checking in to see if you were able to review our previous message. We're here to help.</div><button class="tcopy" onclick="copyT('t2',this)">📋 Copy</button></div>
+    <div class="tc"><span class="ttag tf2">⏰ 48-Hour Follow-Up</span><div class="tmsg" id="t3">Reaching out once more in case you still need information. We're available whenever you're ready.</div><button class="tcopy" onclick="copyT('t3',this)">📋 Copy</button></div>
+    <div class="tc"><span class="ttag tb">📅 Move to Scheduling</span><div class="tmsg" id="t4">Perfect. I'll connect you with our team to continue with your appointment.</div><button class="tcopy" onclick="copyT('t4',this)">📋 Copy</button></div>
+    <div class="tc"><span class="ttag tcl">🔒 Close the Cycle</span><div class="tmsg" id="t5">For now, we'll close this follow-up. If you need information in the future, we'll be happy to assist.</div><button class="tcopy" onclick="copyT('t5',this)">📋 Copy</button></div>
+  </div>
+</div>
+
+<!-- FLOW -->
+<div class="section" id="flow">
+  <div class="section-title">Patient Flow</div>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="flow-icon" style="background:rgba(26,101,224,0.15);">📥</div><div><h4>1. Patient Entry</h4><p>Patient contacts via WhatsApp, DM, or web form.</p></div></div>
+    <div class="flow-step"><div class="flow-icon" style="background:rgba(52,180,240,0.15);">⚡</div><div><h4>2. Initial Response — Under 5 Minutes</h4><p>Use the AI Generator for the perfect first response.</p></div></div>
+    <div class="flow-step"><div class="flow-icon" style="background:rgba(167,139,250,0.15);">🎯</div><div><h4>3. Basic Qualification</h4><p>Understand treatment type, interest, and urgency. Max 2 questions at a time.</p></div></div>
+    <div class="flow-step"><div class="flow-icon" style="background:rgba(201,122,16,0.15);">🔄</div><div><h4>4. Structured Follow-Up</h4><p>No response? Send at 24h, then 48h. Maximum 2 attempts.</p></div></div>
+    <div class="flow-step"><div class="flow-icon" style="background:rgba(34,197,94,0.15);">📅</div><div><h4>5. Move to Scheduling</h4><p>Patient shows intent → hand off to scheduling team.</p></div></div>
+    <div class="flow-step"><div class="flow-icon" style="background:rgba(100,116,139,0.15);">🔒</div><div><h4>6. Cycle Closure</h4><p>No response after both follow-ups → close respectfully.</p></div></div>
+  </div>
+</div>
+
+<!-- CHECKLIST -->
+<div class="section" id="checklist">
+  <div class="section-title">Implementation Checklist</div>
+  <div id="checklistContainer"></div>
+  <button class="cl-reset" onclick="resetCL()">Reset Checklist</button>
+</div>
+
+</div><!-- end wrap -->
+
+<script>
+// API handled by Netlify function
+
+const SYS=`Act as a patient conversion specialist for a dental clinic. Your role is to respond to new patient inquiries with warmth, professionalism, and clear direction toward scheduling.
+
+CORE RULES:
+- Never provide diagnoses, treatment recommendations, or specific pricing
+- Never promise results or guaranteed outcomes
+- Maximum 2–3 sentences per response
+- Always end with a clear but soft call to action
+- No pressure, no urgency language, no insistence
+- Responses must feel natural for WhatsApp (short, clear, human)
+
+ADDITIONAL OPERATING RULES:
+- Be warm but concise
+- Prefer statements over questions whenever possible
+- If intent is clear, move directly toward scheduling
+- Avoid unnecessary explanations
+- Keep interaction focused on next step
+- Do not repeat the same scheduling phrase
+- Shorter responses are preferred
+
+PRIORITY ORDER:
+1. Emergency / pain
+2. Scheduling intent
+3. Pricing
+4. Treatment questions
+5. General information
+
+STRUCTURE (ALWAYS FOLLOW):
+1. Acknowledge the patient
+2. Give minimal necessary context
+3. Move to scheduling (availability or next step)
+
+SCHEDULING LOGIC:
+- If patient asks about availability → move directly to scheduling
+- If multiple questions → answer briefly and guide to consultation
+- If intent is high → avoid back-and-forth
+- Do not overload with information
+
+TONE CONTROL:
+- Never sound robotic
+- Never sound scripted
+- Avoid overly enthusiastic language
+- Sound calm, clear, and human
+
+DETECT AND RESPOND BY CONTEXT:
+PAIN / EMERGENCY → Show empathy first. Offer immediate availability (today or next day).
+PRICING INQUIRY → Acknowledge it's a fair question. Pricing varies by case. Move to consultation.
+IMPLANTS → Acknowledge it's a long-term decision. Offer evaluation to review options.
+ORTHODONTICS / BRACES → Acknowledge time commitment. Offer options adapted to lifestyle.
+WHITENING / COSMETIC → Manage expectations simply. Offer consultation for realistic results.
+PEDIATRIC / CHILDREN → Reassuring tone. Emphasize gentle care.
+GENERAL INQUIRY / CHECKUP → Assume high intent. Offer availability directly.
+UNRESPONSIVE / FOLLOW-UP → Short, warm, no pressure. Leave door open.
+AFTER HOURS → Acknowledge warmly that the clinic is closed. Team will follow up first thing tomorrow. Ask for their phone number.
+
+OUTPUT RULES:
+- No long explanations
+- No paragraphs
+- No emojis
+- Easy to copy/paste`;
+
+// NAV
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// AI
+async function generateResponse() {
+  const input = document.getElementById('patientMsg').value.trim();
+  if (!input) { toast('Paste a patient message first'); return; }
+  
+  const loading = document.getElementById('aiLoading');
+  const result = document.getElementById('aiResult');
+  const resultText = document.getElementById('aiResultText');
+  
+  loading.classList.add('show');
+  result.classList.remove('show');
+  
+  try {
+    const res = await fetch('/.netlify/functions/ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        system: SYS,
+        messages: [{ role: 'user', content: `Patient message: "${input}"\n\nGenerate a professional response. Return ONLY the message text, nothing else.` }]
+      })
+    });
+    
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'Thank you for reaching out. Our team will be happy to assist you.';
+    resultText.textContent = text;
+    result.classList.add('show');
+  } catch(e) {
+    resultText.textContent = 'Could not connect. Please check your internet and try again.';
+    result.classList.add('show');
+  }
+  
+  loading.classList.remove('show');
+}
+
+function copyAI() {
+  const text = document.getElementById('aiResultText').textContent;
+  const btn = document.getElementById('aiCopyBtn');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    toast('Copied!');
+    setTimeout(() => { btn.textContent = '📋 Copy & Send'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// DASHBOARD
+let ticket = parseInt(localStorage.getItem('df_ticket') || '1000');
+let wL = 0, wB = 0;
+document.getElementById('iT').value = ticket;
+
+function fmt(n) { return '$' + n.toLocaleString(); }
+
+function doUpdate() {
+  const l = parseInt(document.getElementById('iL').value);
+  const b = parseInt(document.getElementById('iB').value);
+  const t = parseInt(document.getElementById('iT').value) || 1000;
+  if (isNaN(l) || l < 0) { toast('Enter leads'); return; }
+  if (isNaN(b) || b < 0) { toast('Enter booked'); return; }
+  if (b > l) { toast('Booked cannot exceed leads'); return; }
+  ticket = t; localStorage.setItem('df_ticket', t);
+  wL += l; wB += b;
+  const wLo = wL - wB;
+  const conv = wL > 0 ? ((wB/wL)*100).toFixed(1) : '0.0';
+  const todayLost = (l - b) * t;
+  document.getElementById('kL').textContent = wL;
+  document.getElementById('kB').textContent = wB;
+  document.getElementById('kLo').textContent = wLo;
+  document.getElementById('kR').textContent = fmt(wLo * ticket);
+  const box = document.getElementById('todayBox');
+  box.classList.add('show');
+  if (todayLost === 0) {
+    document.getElementById('tLbl').textContent = 'Great job today!';
+    document.getElementById('tAmt').className = 'today-amt good';
+    document.getElementById('tAmt').textContent = 'No revenue lost';
+    document.getElementById('tMsg').textContent = 'All leads converted!';
+  } else {
+    document.getElementById('tLbl').textContent = 'Revenue Lost Today';
+    document.getElementById('tAmt').className = 'today-amt lost';
+    document.getElementById('tAmt').textContent = fmt(todayLost);
+    document.getElementById('tMsg').textContent = `${wLo} lead${wLo!==1?'s':''} not converted · ${conv}% rate`;
+  }
+  document.getElementById('iL').value = '';
+  document.getElementById('iB').value = '';
+  toast('Updated!');
+}
+
+// TEMPLATES
+function copyT(id, btn) {
+  const text = document.getElementById(id).innerText.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  });
+  toast('Copied!');
+}
+
+// CHECKLIST
+const CL_DATA = [
+  { section: 'Initial Setup', items: ['Open DentalFlow and go to the AI tab', 'Test the AI generator with a sample patient message', 'Share access with your front desk team'] },
+  { section: 'Daily Use', items: ['Open DentalFlow every morning', 'Paste incoming patient messages into the AI Generator', 'Copy the suggested response and send it', 'Respond within 5 minutes of each new lead'] },
+  { section: 'Follow-Up', items: ['Mark leads that have not responded after 24 hours', 'Send the 24-hour follow-up template', 'Send the 48-hour follow-up template if still no response'] },
+  { section: 'Scheduling', items: ['Identify patients ready to book', 'Send the Move to Scheduling message', 'Hand off to your team'] },
+  { section: 'Closure', items: ['Close cycles with no response after both follow-ups', 'Send the Cycle Closure message', 'Do not reach out again unless patient contacts you'] },
+];
+let clState = JSON.parse(localStorage.getItem('df_checks') || '{}');
+
+function renderCL() {
+  const c = document.getElementById('checklistContainer');
+  c.innerHTML = '';
+  let all = 0, done = 0;
+  CL_DATA.forEach((sec, si) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'cl-section';
+    wrap.innerHTML = `<div class="cl-title">${sec.section}</div>`;
+    sec.items.forEach((item, ii) => {
+      const k = `${si}-${ii}`; const isDone = !!clState[k];
+      all++; if (isDone) done++;
+      const row = document.createElement('div');
+      row.className = 'cl-item' + (isDone ? ' done' : '');
+      row.innerHTML = `<div class="cl-box"></div><div class="cl-txt">${item}</div>`;
+      row.onclick = () => { clState[k] = !clState[k]; localStorage.setItem('df_checks', JSON.stringify(clState)); renderCL(); };
+      wrap.appendChild(row);
+    });
+    c.appendChild(wrap);
+  });
+  const pct = Math.round((done/all)*100);
+  const prog = document.createElement('div');
+  prog.className = 'cl-prog';
+  prog.innerHTML = `<div class="cl-prog-top"><span style="color:var(--muted)">Progress</span><span style="color:var(--cyan);font-weight:700">${done}/${all} completed</span></div><div class="cl-prog-bar"><div class="cl-prog-fill" style="width:${pct}%"></div></div>`;
+  c.insertBefore(prog, c.firstChild);
+}
+function resetCL() { clState = {}; localStorage.removeItem('df_checks'); renderCL(); }
+renderCL();
+
+// TOAST
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = '✓ ' + msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+</script>
+</body>
+</html>
