@@ -23,7 +23,7 @@ exports.handler = async function(event, context) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_key,
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
